@@ -26,6 +26,16 @@ class Settings(BaseSettings):
     def split_origins(cls, value: str | list[str]) -> list[str]:
         return value.split(",") if isinstance(value, str) else value
 
+    @field_validator("database_url", mode="before")
+    @classmethod
+    def normalize_database_url(cls, value: str) -> str:
+        """Railway exposes postgres URLs without a SQLAlchemy driver suffix."""
+        if value.startswith("postgres://"):
+            return "postgresql+psycopg://" + value.removeprefix("postgres://")
+        if value.startswith("postgresql://"):
+            return "postgresql+psycopg://" + value.removeprefix("postgresql://")
+        return value
+
     @property
     def is_production(self) -> bool:
         return self.environment == "production"

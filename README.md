@@ -39,7 +39,7 @@ cd frontend && npm install && npm run build
 
 ## Railway deployment
 
-Create/link a Railway project, add PostgreSQL, then configure the variables listed in `.env.example` (Railway injects `DATABASE_URL`). `railway.json` builds the frontend and starts Uvicorn; `/api/health` is the health check. Before a production deploy, run `alembic upgrade head` as a Railway release/pre-deploy step or from a one-off Railway shell.
+Create/link a Railway project, add PostgreSQL, then configure the variables listed in `.env.example`. Set `DATABASE_URL` to `${{Postgres.DATABASE_URL}}`; the application normalizes it for SQLAlchemy's Psycopg driver. The Dockerfile builds React with Node and runs FastAPI with Python in one service. Railway runs migrations and idempotent development seed data as its pre-deploy step; `/api/health` is the health check.
 
 ## Current MVP Scope
 
