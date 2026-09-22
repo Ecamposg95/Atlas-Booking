@@ -1,0 +1,1 @@
+"""Atlas Booking application."""
