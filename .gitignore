@@ -1,0 +1,32 @@
+# Environment and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*credentials*.json
+*credential*.json
+*service-account*.json
+*token*.json
+google-oauth*.json
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# Tooling and editors
+.DS_Store
+.idea/
+.vscode/
+
+# Railway local state
+.railway/
