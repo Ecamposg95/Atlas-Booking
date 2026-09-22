@@ -20,6 +20,8 @@ class Settings(BaseSettings):
     google_client_id: str | None = None
     google_client_secret: str | None = None
     google_refresh_token: str | None = None
+    roberto_booking_url: str | None = None
+    damian_booking_url: str | None = None
 
     @field_validator("cors_origins", mode="before")
     @classmethod

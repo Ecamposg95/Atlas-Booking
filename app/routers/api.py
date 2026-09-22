@@ -6,6 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload
 
+from app.core.config import get_settings
 from app.database import get_db
 from app.models import Appointment, AppointmentStatus, Service, StaffMember
 from app.schemas import AppointmentCreate, AppointmentOut, AvailabilityOut, CancelInput, ServiceOut, SlotOut, StaffOut
@@ -28,7 +29,12 @@ async def health():
 
 @router.get("/staff", response_model=list[StaffOut])
 async def list_staff(db: Session = Depends(get_db)):
-    return db.scalars(select(StaffMember).where(StaffMember.active.is_(True)).order_by(StaffMember.name)).all()
+    urls = {
+        "roberto-rodriguez": get_settings().roberto_booking_url,
+        "damian-medina": get_settings().damian_booking_url,
+    }
+    staff = db.scalars(select(StaffMember).where(StaffMember.active.is_(True)).order_by(StaffMember.name)).all()
+    return [StaffOut(id=person.id, name=person.name, slug=person.slug, booking_url=urls.get(person.slug)) for person in staff]
 
 
 @router.get("/services", response_model=list[ServiceOut])

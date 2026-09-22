@@ -28,7 +28,7 @@ Copy `.env.example`; never commit `.env`, refresh tokens, OAuth downloads, or se
 
 ## Google Calendar
 
-The calendar gateway is isolated in `app/services/google_calendar.py`. OAuth refresh-token credentials are selected because they support an unattended Railway service. Tests supply a fake gateway and never call Google. Each staff member can later receive a dedicated `calendar_id`.
+The public landing uses each consultant's Google Appointment Schedule: choose a consultant, open the modal, then continue to Google Calendar. Configure the public links through `ROBERTO_BOOKING_URL` and `DAMIAN_BOOKING_URL` in Railway Variables. These links are not secrets. The API calendar gateway remains isolated for a future server-to-server integration; tests supply a fake gateway and never call Google.
 
 ## Tests and build
 
@@ -43,7 +43,7 @@ Create/link a Railway project, add PostgreSQL, then configure the variables list
 
 ## Current MVP Scope
 
-Public professional selection, service selection, availability lookup, double-booking prevention, appointment creation/cancellation API, calendar adapter, and a one-page booking experience.
+Premium public consultant selection and a Google Calendar reservation handoff, plus the retained API foundations for a future first-party booking flow.
 
 ## Future Roadmap
 

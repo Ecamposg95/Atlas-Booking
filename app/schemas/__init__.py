@@ -9,6 +9,7 @@ class StaffOut(BaseModel):
     id: uuid.UUID
     name: str
     slug: str
+    booking_url: str | None = None
 
 
 class ServiceOut(BaseModel):
