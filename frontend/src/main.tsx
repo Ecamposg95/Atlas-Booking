@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { createRoot } from 'react-dom/client'
-import axios from 'axios'
 import './styles.css'
 
 type Consultant = { id: string; name: string; slug: string; booking_url?: string | null }
@@ -8,12 +7,13 @@ const linkedInProfiles: Record<string, string> = {
   'roberto-rodriguez': 'https://www.linkedin.com/in/roberto-e-rodriguez/',
   'damian-medina': 'https://www.linkedin.com/in/damianmedinalion/',
 }
-const api = axios.create({ baseURL: '/api' })
+const consultants: Consultant[] = [
+  { id: 'roberto-rodriguez', name: 'Roberto Rodríguez', slug: 'roberto-rodriguez' },
+  { id: 'damian-medina', name: 'Damián Medina', slug: 'damian-medina' },
+]
 
 function App() {
-  const [consultants, setConsultants] = useState<Consultant[]>([])
   const [selected, setSelected] = useState<Consultant | null>(null)
-  useEffect(() => { api.get<Consultant[]>('/staff').then(({ data }) => setConsultants(data)) }, [])
   const firstName = selected?.name.split(' ')[0]
   return <main>
     <nav className="nav"><a className="wordmark" href="/">ATLAS<span>·</span>BOOKING</a><span>Consultoría privada</span></nav>
