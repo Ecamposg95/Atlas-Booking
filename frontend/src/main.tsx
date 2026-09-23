@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import './styles.css'
 
@@ -11,6 +11,35 @@ const consultants: Consultant[] = [
   { id: 'roberto-rodriguez', name: 'Roberto Rodríguez', slug: 'roberto-rodriguez' },
   { id: 'damian-medina', name: 'Damián Medina', slug: 'damian-medina' },
 ]
+const googleSchedulingUrl = 'https://calendar.google.com/calendar/appointments/schedules/AcZssZ05W4uPMeMliM0D8N1GBMeEGngHEYeVXVmfSbVZbz1yZ14eE08MecVWWmdi6OFaSlRfQKQ0HOD8?gv=true'
+
+declare global {
+  interface Window {
+    calendar?: { schedulingButton: { load: (options: { url: string; color: string; label: string; target: HTMLElement }) => void } }
+  }
+}
+
+function GoogleSchedulingButton() {
+  const target = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const loadButton = () => {
+      if (!target.current || !window.calendar) return
+      target.current.replaceChildren()
+      window.calendar.schedulingButton.load({ url: googleSchedulingUrl, color: '#1769aa', label: 'Programar una cita', target: target.current })
+    }
+    if (!document.querySelector('link[data-google-scheduling]')) {
+      const stylesheet = document.createElement('link')
+      stylesheet.rel = 'stylesheet'; stylesheet.href = 'https://calendar.google.com/calendar/scheduling-button-script.css'; stylesheet.dataset.googleScheduling = 'true'
+      document.head.appendChild(stylesheet)
+    }
+    const existing = document.querySelector<HTMLScriptElement>('script[data-google-scheduling]')
+    if (existing) { existing.addEventListener('load', loadButton); loadButton(); return () => existing.removeEventListener('load', loadButton) }
+    const script = document.createElement('script')
+    script.src = 'https://calendar.google.com/calendar/scheduling-button-script.js'; script.async = true; script.dataset.googleScheduling = 'true'; script.onload = loadButton
+    document.head.appendChild(script)
+  }, [])
+  return <div className="google-scheduler" ref={target}><a className="calendar-button" href={googleSchedulingUrl} target="_blank" rel="noreferrer">Programar una cita <span>↗</span></a></div>
+}
 
 function App() {
   const [selected, setSelected] = useState<Consultant | null>(null)
@@ -21,7 +50,7 @@ function App() {
     <section id="consultores" className="consultants"><div className="section-heading"><p className="kicker">ELIGE A TU CONSULTOR</p><p>Cada sesión inicia en la agenda personal de cada profesional.</p></div><div className="consultant-grid">{consultants.map((person, index) => <article className="consultant" key={person.id}><div className={'portrait portrait-' + index}><span>{String(index + 1).padStart(2, '0')}</span><div className="monogram">{person.name.split(' ').map(word => word[0]).join('').slice(0, 2)}</div><div className="portrait-reveal"><span className="role">CONSULTOR SENIOR</span><h2>{person.name}</h2><div className="portrait-actions"><button onClick={() => setSelected(person)}>Agendar sesión <b>↗</b></button><a href={linkedInProfiles[person.slug]} target="_blank" rel="noreferrer">Ver LinkedIn <b>↗</b></a></div></div></div><div className="consultant-copy"><span className="role">CONSULTOR SENIOR</span><h2>{person.name}</h2><button className="explore" onClick={() => setSelected(person)}>Ver disponibilidad <b>↗</b></button></div></article>)}</div></section>
     <section className="promise"><p className="kicker">NUESTRA FORMA DE TRABAJAR</p><h2>Menos ruido.<br/>Mejores decisiones.</h2><p>Sesiones de una hora, con el tiempo y la atención que una conversación importante requiere.</p></section>
     <footer><a className="wordmark" href="/">ATLAS<span>·</span>BOOKING</a><span>© 2026 · Ciudad de México</span><span className="atlas-tech">A product by <b>ATLAS TECH</b></span></footer>
-    {selected && <div className="overlay" role="dialog" aria-modal="true" onMouseDown={() => setSelected(null)}><article className="booking-modal" onMouseDown={event => event.stopPropagation()}><button className="close" aria-label="Cerrar" onClick={() => setSelected(null)}>×</button><p className="kicker">CONSULTOR SENIOR</p><h2>Agenda con<br/><em>{firstName}.</em></h2><p>Serás dirigido a su agenda segura de Google Calendar para elegir el horario que mejor te funcione.</p><a className="profile-link" href={linkedInProfiles[selected.slug]} target="_blank" rel="noreferrer">Conocer perfil profesional en LinkedIn <span>↗</span></a>{selected.booking_url ? <a className="calendar-button" href={selected.booking_url} target="_blank" rel="noreferrer">Abrir agenda de Google <span>↗</span></a> : <div className="pending"><b>Agenda en preparación</b><span>El enlace de Google Calendar estará disponible muy pronto.</span></div>}<small>Google Calendar gestiona la disponibilidad y la confirmación de tu cita.</small></article></div>}
+    {selected && <div className="overlay" role="dialog" aria-modal="true" onMouseDown={() => setSelected(null)}><article className="booking-modal" onMouseDown={event => event.stopPropagation()}><button className="close" aria-label="Cerrar" onClick={() => setSelected(null)}>×</button><p className="kicker">CONSULTOR SENIOR</p><h2>Agenda con<br/><em>{firstName}.</em></h2><p>Elige un horario en la agenda segura de Google Calendar.</p><a className="profile-link" href={linkedInProfiles[selected.slug]} target="_blank" rel="noreferrer">Conocer perfil profesional en LinkedIn <span>↗</span></a><GoogleSchedulingButton /><small>Google Calendar gestiona la disponibilidad y la confirmación de tu cita.</small></article></div>}
   </main>
 }
 createRoot(document.getElementById('root')!).render(<App />)
