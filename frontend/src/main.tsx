@@ -12,7 +12,7 @@ const consultants: Consultant[] = [
   { id: 'damian-medina', name: 'Damián Medina', slug: 'damian-medina' },
 ]
 const googleSchedulingUrls: Record<string, string | undefined> = {
-  'roberto-rodriguez': 'https://calendar.google.com/calendar/appointments/schedules/AcZssZ05W4uPMeMliM0D8N1GBMeEGngHEYeVXVmfSbVZbz1yZ14eE08MecVWWmdi6OFaSlRfQKQ0HOD8?gv=true',
+  'roberto-rodriguez': undefined,
   'damian-medina': undefined,
 }
 
